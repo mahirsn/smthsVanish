@@ -52,6 +52,12 @@ final class Commands {
                     toggle(self, self);
                     return Command.SINGLE_SUCCESS;
                 })
+                .then(literal("interact")
+                        .requires(s -> s.getSender().hasPermission("smthsvanish.interact"))
+                        .executes(ctx -> toggleSwitch(ctx, true)))
+                .then(literal("pickup")
+                        .requires(s -> s.getSender().hasPermission("smthsvanish.pickup"))
+                        .executes(ctx -> toggleSwitch(ctx, false)))
                 .then(literal("list")
                         .requires(s -> s.getSender().hasPermission("smthsvanish.list"))
                         .executes(this::list))
@@ -137,6 +143,22 @@ final class Commands {
             plugin.messages().send(by, on ? "vanish-on-other" : "vanish-off-other", Messages.player(target.getName()));
             plugin.messages().send(target, on ? "vanish-on-by" : "vanish-off-by", Messages.player(by.getName()), Messages.value("level", level));
         }
+    }
+
+    /** /vanish interact and /vanish pickup: on for now, off again at the next vanish. */
+    private int toggleSwitch(CommandContext<CommandSourceStack> ctx, boolean interact) {
+        Player self = player(ctx);
+        if (self == null) return 0;
+        VanishService vanish = plugin.vanish();
+        var state = vanish.state(self.getUniqueId());
+        if (!state.vanished()) {
+            plugin.messages().send(self, "not-vanished");
+            return 0;
+        }
+        boolean on = interact ? !state.interact() : !state.pickup();
+        vanish.setState(self, interact ? state.withInteract(on) : state.withPickup(on));
+        plugin.messages().send(self, (interact ? "interact-" : "pickup-") + (on ? "on" : "off"));
+        return Command.SINGLE_SUCCESS;
     }
 
     private int list(CommandContext<CommandSourceStack> ctx) {

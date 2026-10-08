@@ -9,7 +9,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 /**
- * %smthsvanish_vanished%, _level%, _see_level%, _disguised%, _name% (disguise name when
+ * %smthsvanish_vanished%, _level%, _see_level%, _interact%, _pickup%, _disguised%, _name% (disguise name when
  * disguised) and _online% (online players this viewer can see, on this server).
  */
 @NullMarked
@@ -48,6 +48,8 @@ public final class Placeholders extends PlaceholderExpansion {
             case "vanished" -> Boolean.toString(vanish.isVanished(player.getUniqueId()));
             case "level" -> Integer.toString(vanish.state(player.getUniqueId()).level());
             case "see_level" -> Integer.toString(vanish.seeLevel(player));
+            case "interact" -> Boolean.toString(vanish.state(player.getUniqueId()).interact());
+            case "pickup" -> Boolean.toString(vanish.state(player.getUniqueId()).pickup());
             case "disguised" -> Boolean.toString(plugin.disguises().disguise(player.getUniqueId()) != null);
             case "name" -> plugin.disguises().visibleName(player);
             case "online" -> Long.toString(Bukkit.getOnlinePlayers().stream().filter(p -> vanish.canSee(player, p)).count());

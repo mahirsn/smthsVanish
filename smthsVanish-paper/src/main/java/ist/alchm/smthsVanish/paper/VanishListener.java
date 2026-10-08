@@ -10,18 +10,14 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockReceiveGameEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.TabCompleteEvent;
@@ -100,15 +96,6 @@ final class VanishListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    void pickup(EntityPickupItemEvent event) {
-        if (plugin.settings().blockItemPickup()
-                && event.getEntity() instanceof Player p
-                && vanish.isVanished(p.getUniqueId())
-                && !p.hasPermission("smthsvanish.pickup")) {
-            event.setCancelled(true);
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     void target(EntityTargetLivingEntityEvent event) {
@@ -119,16 +106,6 @@ final class VanishListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    void physical(PlayerInteractEvent event) {
-        Player p = event.getPlayer();
-        if (event.getAction() == Action.PHYSICAL
-                && plugin.settings().blockPhysicalInteract()
-                && vanish.isVanished(p.getUniqueId())
-                && !p.hasPermission("smthsvanish.interact")) {
-            event.setUseInteractedBlock(Event.Result.DENY);
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     void gameEvent(BlockReceiveGameEvent event) {
@@ -139,13 +116,6 @@ final class VanishListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    void experience(com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent event) {
-        Player p = event.getPlayer();
-        if (plugin.settings().blockItemPickup() && vanish.isVanished(p.getUniqueId()) && !p.hasPermission("smthsvanish.pickup")) {
-            event.setCancelled(true);
-        }
-    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     void hunger(org.bukkit.event.entity.FoodLevelChangeEvent event) {

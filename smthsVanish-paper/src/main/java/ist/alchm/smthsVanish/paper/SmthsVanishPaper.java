@@ -58,6 +58,7 @@ public final class SmthsVanishPaper extends JavaPlugin implements SmthsVanishApi
 
         plugins.registerEvents(new VanishListener(this, vanish), this);
         plugins.registerEvents(new SilentContainers(this), this);
+        plugins.registerEvents(new Interactions(this), this);
         Commands.register(this);
         getServer().getServicesManager().register(SmthsVanishApi.class, this, this, ServicePriority.Normal);
 
@@ -112,7 +113,10 @@ public final class SmthsVanishPaper extends JavaPlugin implements SmthsVanishApi
         for (Player p : Bukkit.getOnlinePlayers()) {
             var state = vanish().state(p.getUniqueId());
             if (state.vanished()) {
-                p.sendActionBar(messages().get("action-bar", Messages.value("level", state.level())));
+                p.sendActionBar(messages().get("action-bar",
+                        Messages.value("level", state.level()),
+                        net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("interact", messages().get(state.interact() ? "state-on" : "state-off")),
+                        net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("pickup", messages().get(state.pickup() ? "state-on" : "state-off"))));
             }
         }
     }

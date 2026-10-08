@@ -20,10 +20,12 @@ vanish:
   fake-messages-on-toggle: true
   # Vanish olan oyuncunun chat'i engellenir. smthsvanish.chat izni engeli geçer.
   block-chat: true
-  # smthsvanish.pickup izni engeli geçer.
+  # Vanish açıkken dünyayla etkileşim kapalı: blok kırma ve koyma, kapı, buton, sandık, entity,
+  # saldırı, eşya atma, kova, ok ve ender pearl, basınç plakası, tarla.
+  # smthsvanish.interact izni olan /vanish interact ile sadece ihtiyaç anında açar.
+  block-interaction: true
+  # Eşya ve XP toplama kapalı. smthsvanish.pickup izni olan /vanish pickup ile açar.
   block-item-pickup: true
-  # Basınç plakası, tripwire, tarla ezme. smthsvanish.interact izni engeli geçer.
-  block-physical-interact: true
   block-mob-targeting: true
   # Sculk sensör ve shrieker vanish olan oyuncuyu duymaz.
   block-game-events: true
@@ -35,7 +37,8 @@ vanish:
   hide-advancements: true
   hide-death-messages: true
   # Sandık, varil ve shulker animasyonsuz ve sessiz açılır (salt okunur kopya).
-  # Ender chest gerçek hâliyle açılır. smthsvanish.silentchest izni gerekir. Eğilerek tıklayınca normal açılır.
+  # Ender chest gerçek hâliyle açılır. smthsvanish.silentchest izni gerekir.
+  # Etkileşim açıkken (/vanish interact) eğilerek tıklarsan sandık gerçek hâliyle açılır.
   silent-containers: true
   # smthsvanish.fly izni varsa vanish açılınca uçma açılır.
   flight: true

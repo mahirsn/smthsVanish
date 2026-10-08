@@ -41,4 +41,15 @@ class CommonTest {
         assertEquals(plain, VanishState.fromHash(new VanishState(true, 4, null).toHash()));
         assertEquals("", plain.toHash().get("disguise"));
     }
+
+    @Test
+    void switchesSurviveLevelChangesButNotANewVanish() {
+        VanishState on = new VanishState(true, 2, null).withInteract(true).withPickup(true);
+        assertEquals(on, VanishState.fromHash(on.toHash()));
+        VanishState promoted = on.withVanish(true, 5);
+        assertTrue(promoted.interact() && promoted.pickup());
+        VanishState off = on.withVanish(false, 0);
+        assertFalse(off.interact() || off.pickup());
+        assertFalse(off.withVanish(true, 2).interact());
+    }
 }

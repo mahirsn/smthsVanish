@@ -58,11 +58,11 @@ permissions:
     description: Vanish açıkken chat yaz
     default: false
   smthsvanish.pickup:
-    description: Vanish açıkken eşya topla
-    default: false
+    description: /vanish pickup ile eşya toplamayı geçici aç
+    default: op
   smthsvanish.interact:
-    description: Vanish açıkken basınç plakası ve tripwire tetikle
-    default: false
+    description: /vanish interact ile dünyayla etkileşimi geçici aç
+    default: op
   smthsvanish.silentchest:
     description: Sandıkları sessiz aç
     default: op
