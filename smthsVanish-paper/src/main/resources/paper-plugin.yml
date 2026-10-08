@@ -1,0 +1,86 @@
+name: smthsVanish
+version: ${version}
+main: ist.alchm.smthsVanish.paper.SmthsVanishPaper
+api-version: "26.2"
+description: Seviyeli vanish ve disguise. Proxy ve backend'ler arası Redis ile senkron.
+authors: [mahirsn]
+dependencies:
+  server:
+    packetevents:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    LuckPerms:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    voicechat:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    # Bu pluginler "vanished" metadata'sını okur. Onlardan önce yüklenmek yeterli.
+    TAB:
+      load: AFTER
+      required: false
+    smthsSMP:
+      load: AFTER
+      required: false
+    smthsFriends:
+      load: AFTER
+      required: false
+permissions:
+  smthsvanish.use:
+    description: /vanish ile kendini gizle
+    default: op
+  smthsvanish.use.others:
+    description: Başka bir oyuncunun vanish durumunu değiştir
+    default: op
+  smthsvanish.list:
+    description: /vanish list
+    default: op
+  smthsvanish.admin:
+    description: /vanish reload
+    default: op
+  smthsvanish.auto:
+    description: Ağa her girişte proxy seni otomatik vanish yapar (smthsVanish-velocity gerekir)
+    default: false
+  smthsvanish.level.1:
+    description: Vanish seviyesi 1. Herhangi bir sayı çalışır, levels.max'a kadar
+    default: op
+  smthsvanish.see.1:
+    description: Seviyesi 1 olan vanish oyuncuları gör. Herhangi bir sayı çalışır
+    default: op
+  smthsvanish.chat:
+    description: Vanish açıkken chat yaz
+    default: false
+  smthsvanish.pickup:
+    description: Vanish açıkken eşya topla
+    default: false
+  smthsvanish.interact:
+    description: Vanish açıkken basınç plakası ve tripwire tetikle
+    default: false
+  smthsvanish.silentchest:
+    description: Sandıkları sessiz aç
+    default: op
+  smthsvanish.fly:
+    description: Vanish açılınca uçma açılır
+    default: op
+  smthsvanish.disguise:
+    description: /disguise ile rastgele bir adla gizlen
+    default: op
+  smthsvanish.disguise.name:
+    description: /disguise <ad> ile adı kendin seç
+    default: op
+  smthsvanish.disguise.skin:
+    description: /disguise <ad> <skin> ile skini kendin seç
+    default: op
+  smthsvanish.disguise.others:
+    description: Başkasının disguise'ını kaldır
+    default: op
+  smthsvanish.disguise.see:
+    description: Disguise olan oyuncuların gerçek adını ve skinini gör
+    default: op

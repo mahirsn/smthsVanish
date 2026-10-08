@@ -1,0 +1,10 @@
+.gradle/
+build/
+**/build/
+.idea/
+*.iml
+run/
+e2e/run/
+e2e/jars/
+e2e/bots/node_modules/
+e2e/bots/package-lock.json

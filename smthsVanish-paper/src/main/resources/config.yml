@@ -1,0 +1,64 @@
+# smthsVanish — Paper backend ayarları.
+# Her özellik buradan kapatılabilir. İzinler paper-plugin.yml içinde listelenir.
+
+redis:
+  # Proxy ve tüm backend'ler AYNI Redis'i kullanmalı. Vanish durumu buradan okunur.
+  uri: "redis://localhost:6379/0"
+  timeout-ms: 2000
+
+levels:
+  # smthsvanish.level.1 .. smthsvanish.level.<max> ve smthsvanish.see.1 .. smthsvanish.see.<max>
+  # Bir izleyici, vanish olan oyuncuyu sadece see seviyesi >= o oyuncunun vanish seviyesi ise görür.
+  max: 10
+
+vanish:
+  # Giriş anında Redis'e ulaşılamazsa smthsvanish.use izni olan oyuncu gizli girer.
+  # Kapatırsan Redis kesintisinde yetkili oyuncular görünür girebilir.
+  vanish-staff-when-redis-down: true
+  hide-join-quit-messages: true
+  # Vanish açılınca seni göremeyenlere sahte çıkış, kapanınca sahte giriş mesajı gönderir.
+  fake-messages-on-toggle: true
+  # Vanish olan oyuncunun chat'i engellenir. smthsvanish.chat izni engeli geçer.
+  block-chat: true
+  # smthsvanish.pickup izni engeli geçer.
+  block-item-pickup: true
+  # Basınç plakası, tripwire, tarla ezme. smthsvanish.interact izni engeli geçer.
+  block-physical-interact: true
+  block-mob-targeting: true
+  # Sculk sensör ve shrieker vanish olan oyuncuyu duymaz.
+  block-game-events: true
+  ignore-sleep: true
+  disable-collision: true
+  # Mob doğması ve vanilla spawner'lar vanish olan oyuncu için çalışmaz.
+  stop-spawning: true
+  invulnerable: true
+  hide-advancements: true
+  hide-death-messages: true
+  # Sandık, varil ve shulker animasyonsuz ve sessiz açılır (salt okunur kopya).
+  # Ender chest gerçek hâliyle açılır. smthsvanish.silentchest izni gerekir. Eğilerek tıklayınca normal açılır.
+  silent-containers: true
+  # smthsvanish.fly izni varsa vanish açılınca uçma açılır.
+  flight: true
+  night-vision: false
+  action-bar: true
+  hide-from-server-list: true
+  hide-from-tab-complete: true
+
+disguise:
+  # packetevents gerekir. Yoksa disguise kapanır.
+  enabled: true
+  # Disguise varken LuckPerms prefix ve suffix'i bu grubun değerleriyle gösterilir (geçici, veritabanına yazılmaz).
+  mask-rank: true
+  mask-rank-group: default
+  # Chat, tab, isim etiketi ve skor tablosu paketlerinde gerçek ad, disguise adıyla değiştirilir.
+  mask-name-in-packets: true
+  # /disguise argümansız kullanılınca bu listeden rastgele bir ad seçilir.
+  random-names:
+    - Kavruk
+    - Yildiz_Avcisi
+    - SessizKedi
+    - MaviBalina
+    - KumKalesi
+    - DemirciUsta
+    - GeceKusu
+    - TasYontan

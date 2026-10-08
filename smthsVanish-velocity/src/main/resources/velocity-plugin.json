@@ -1,0 +1,11 @@
+{
+  "id": "smthsvanish",
+  "name": "smthsVanish",
+  "version": "${version}",
+  "description": "Network side of smthsVanish: auto-vanish before the first backend, and vanish-aware ping counts.",
+  "main": "ist.alchm.smthsVanish.velocity.SmthsVanishVelocity",
+  "authors": ["mahirsn"],
+  "dependencies": [
+    {"id": "luckperms", "optional": true}
+  ]
+}
