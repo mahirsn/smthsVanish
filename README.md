@@ -1,35 +1,69 @@
 # smthsVanish
 
-Seviyeli vanish ve disguise. Paper 26.2 ve Velocity içindir.
+[Türkçe](README.tr.md)
 
-## Kurulum
+Leveled vanish and disguise for Paper networks. A vanished player stays hidden when they move between servers.
 
-1. `smthsVanish-paper` jar'ını her backend'e, `smthsVanish-velocity` jar'ını proxy'ye koy.
-2. Tüm sunucularda `redis.uri` değerini aynı Redis'e ayarla.
-3. Disguise için backend'lere packetevents kur.
+## Requirements
 
-## Komutlar
+- Paper 26.2 and Java 25
+- Redis, shared by all servers
+- Velocity (optional): auto-vanish on network join, hidden player count in the server list, SkinsRestorer skins in proxy mode
+- packetevents (optional): needed for disguise
+- LuckPerms, PlaceholderAPI, SkinsRestorer, Simple Voice Chat (optional)
 
-| Komut | İzin |
+## Installation
+
+1. Put `smthsVanish-paper-<version>.jar` on every Paper server.
+2. Put `smthsVanish-velocity-<version>.jar` on the Velocity proxy.
+3. Start the servers once.
+4. Set the same `redis.uri` in `plugins/smthsVanish/config.yml` and in the proxy's `plugins/smthsvanish/config.properties`.
+5. Restart.
+
+## Commands
+
+| Command | Permission | Description |
+|---|---|---|
+| `/vanish [player]` | `smthsvanish.use`, `smthsvanish.use.others` | Turn vanish on or off. |
+| `/vanish interact` | `smthsvanish.interact` | Allow world interaction until the next vanish. |
+| `/vanish pickup` | `smthsvanish.pickup` | Allow item pickup until the next vanish. |
+| `/vanish list` | `smthsvanish.list` | Show the vanished players you can see. |
+| `/vanish reload` | `smthsvanish.admin` | Reload the configuration and messages. |
+| `/disguise [name]` | `smthsvanish.disguise`, `smthsvanish.disguise.name` | Appear as another name. Without a name, a random one from the configuration. |
+| `/undisguise [player]` | `smthsvanish.disguise`, `smthsvanish.disguise.others` | Remove the disguise. |
+
+## Permissions
+
+| Permission | Effect |
 |---|---|
-| `/vanish [oyuncu]` | `smthsvanish.use`, `smthsvanish.use.others` |
-| `/vanish interact` | `smthsvanish.interact` |
-| `/vanish pickup` | `smthsvanish.pickup` |
-| `/vanish list` | `smthsvanish.list` |
-| `/vanish reload` | `smthsvanish.admin` |
-| `/disguise [ad] [skin]` | `smthsvanish.disguise`, `.name`, `.skin` |
-| `/undisguise [oyuncu]` | `smthsvanish.disguise`, `.others` |
+| `smthsvanish.level.<n>` | Vanish level. |
+| `smthsvanish.see.<n>` | See vanished players up to level `n`. |
+| `smthsvanish.auto` | Vanish automatically on network join (needs the Velocity plugin). |
+| `smthsvanish.silentchest` | Open containers without animation or sound. |
+| `smthsvanish.chat` | Chat while vanished. |
+| `smthsvanish.fly` | Fly while vanished. |
+| `smthsvanish.disguise.see` | See the real name and skin of disguised players. |
 
-## İzinler
+## How it works
 
-| İzin | Etki |
-|---|---|
-| `smthsvanish.level.N` | Vanish seviyesi. |
-| `smthsvanish.see.N` | N ve altındaki seviyeleri görür. |
-| `smthsvanish.auto` | Ağa girince otomatik vanish. |
-| `smthsvanish.silentchest` | Sandıkları sessiz açar. |
-| `smthsvanish.chat` | Vanish açıkken chat yazar. |
-| `smthsvanish.fly` | Vanish açılınca uçar. |
-| `smthsvanish.disguise.see` | Disguise olanların gerçek adını görür. |
+- A player sees a vanished player only if their see level is equal to or higher than the vanished player's level.
+- While vanished, world interaction and item pickup are off. `/vanish interact` and `/vanish pickup` turn them on until the next vanish.
+- A disguise uses the skin the named player has on your network (SkinsRestorer). Without SkinsRestorer, it uses the Mojang skin of that name.
+- A disguise changes only what other players see. Logging and moderation plugins still record the real player.
 
-Vanish açıkken dünyayla etkileşim ve eşya toplama kapalıdır. `/vanish interact` ve `/vanish pickup` bunları açar. Bir sonraki vanish'te ikisi de yine kapanır.
+## Developer API
+
+```java
+SmthsVanishApi api = Bukkit.getServicesManager().load(SmthsVanishApi.class);
+api.isVanished(uuid);
+api.canSee(viewer, target);
+api.visibleName(viewer, target);
+```
+
+Plugins that cannot use the API can read the `vanished` metadata or the Redis hash `smthsvanish:player:<uuid>`.
+
+## Building
+
+```
+./gradlew build
+```
