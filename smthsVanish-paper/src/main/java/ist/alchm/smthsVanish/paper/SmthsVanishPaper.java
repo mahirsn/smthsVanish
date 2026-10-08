@@ -63,6 +63,7 @@ public final class SmthsVanishPaper extends JavaPlugin implements SmthsVanishApi
         getServer().getServicesManager().register(SmthsVanishApi.class, this, this, ServicePriority.Normal);
 
         redis.subscribe(this::onRemoteChange);
+        redis.listenForSkins();
         getServer().getGlobalRegionScheduler().runAtFixedRate(this, task -> actionBars(), 40L, 40L);
 
         // A /reload or a late enable: players already online were never pre-loaded.
@@ -133,6 +134,10 @@ public final class SmthsVanishPaper extends JavaPlugin implements SmthsVanishApi
 
     public VanishService vanish() {
         return Objects.requireNonNull(vanish);
+    }
+
+    public VanishStore store() {
+        return Objects.requireNonNull(store);
     }
 
     public DisguiseService disguises() {

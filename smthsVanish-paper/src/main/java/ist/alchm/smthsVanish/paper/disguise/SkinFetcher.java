@@ -9,13 +9,12 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import ist.alchm.smthsVanish.common.Skin;
 import org.jspecify.annotations.NullMarked;
 
 /** Looks up a premium account's signed skin from Mojang. Empty when the account does not exist. */
 @NullMarked
 final class SkinFetcher {
-    record Skin(String value, String signature) {}
-
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 
     CompletableFuture<Optional<Skin>> fetch(String name) {

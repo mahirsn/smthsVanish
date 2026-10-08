@@ -12,6 +12,8 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import ist.alchm.smthsVanish.common.Levels;
+import ist.alchm.smthsVanish.common.Skin;
+import ist.alchm.smthsVanish.common.SkinsRestorerLookup;
 import ist.alchm.smthsVanish.common.VanishState;
 import ist.alchm.smthsVanish.common.VanishStore;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,9 +34,9 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
- * The proxy half. Backends do the hiding; the proxy owns the two moments a backend cannot see:
- * the network login (auto-vanish must be stored before the first backend reads it) and the
- * server list ping, which the proxy answers itself.
+ * The proxy half. Backends do the hiding; the proxy owns what a backend cannot see: the network
+ * login (auto-vanish must be stored before the first backend reads it), the server list ping,
+ * which the proxy answers itself, and SkinsRestorer data when it runs in proxy mode.
  */
 @NullMarked
 public final class SmthsVanishVelocity {
@@ -64,6 +67,10 @@ public final class SmthsVanishVelocity {
                 Duration.ofMillis(Long.parseLong(cfg.getProperty("redis.timeout-ms", "2000").trim())));
         store = redis;
         redis.subscribe(this::onRemoteChange);
+        // Backends in SkinsRestorer proxy mode cannot read skins; the proxy answers for them.
+        if (proxy.getPluginManager().isLoaded("skinsrestorer")) {
+            redis.serveSkins(this::skinOf, task -> proxy.getScheduler().buildTask(this, task).schedule());
+        }
     }
 
     @Subscribe
@@ -126,6 +133,16 @@ public final class SmthsVanishVelocity {
                 logger.warn("Could not refresh vanish state of {}", id, e);
             }
         }).schedule();
+    }
+
+    private Optional<Skin> skinOf(String name, @Nullable UUID backendId) {
+        try {
+            UUID id = proxy.getPlayer(name).map(Player::getUniqueId).orElse(backendId);
+            return SkinsRestorerLookup.find(id, name);
+        } catch (Exception e) {
+            logger.warn("SkinsRestorer lookup for {} failed", name, e);
+            return Optional.empty();
+        }
     }
 
     /** Vanished per the last state this proxy read. For other proxy plugins via the plugin instance. */

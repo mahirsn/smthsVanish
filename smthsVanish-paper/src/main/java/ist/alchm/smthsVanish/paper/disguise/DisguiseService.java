@@ -1,18 +1,23 @@
 package ist.alchm.smthsVanish.paper.disguise;
 
+import ist.alchm.smthsVanish.common.Skin;
+import ist.alchm.smthsVanish.common.SkinsRestorerLookup;
 import ist.alchm.smthsVanish.common.VanishState;
 import ist.alchm.smthsVanish.paper.Messages;
 import ist.alchm.smthsVanish.paper.SmthsVanishPaper;
 import ist.alchm.smthsVanish.paper.hook.LuckPermsHook;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -27,6 +32,7 @@ import org.jspecify.annotations.Nullable;
 public final class DisguiseService {
     public static final String SEE = "smthsvanish.disguise.see";
     private static final Pattern VALID_NAME = Pattern.compile("[A-Za-z0-9_]{3,16}");
+    private static final Duration PROXY_SKIN_TIMEOUT = Duration.ofSeconds(2);
 
     private final SmthsVanishPaper plugin;
     private final @Nullable LuckPermsHook luckPerms;
@@ -135,16 +141,41 @@ public final class DisguiseService {
     }
 
     /** Looks up the skin off-thread, then applies on the player's thread. */
-    public void disguise(Player player, String name, String skinOwner) {
-        skins.fetch(skinOwner).thenAccept(skin -> player.getScheduler().run(plugin, task -> {
+    public void disguise(Player player, String name) {
+        skinFor(name).thenAccept(skin -> player.getScheduler().run(plugin, task -> {
             if (!player.isOnline()) return;
             if (skin.isEmpty()) plugin.messages().send(player, "disguise-skin-failed");
             VanishState.Disguise d = new VanishState.Disguise(
-                    name, skin.map(SkinFetcher.Skin::value).orElse(null), skin.map(SkinFetcher.Skin::signature).orElse(null));
+                    name, skin.map(Skin::value).orElse(null), skin.map(Skin::signature).orElse(null));
             plugin.vanish().setState(player, plugin.vanish().state(player.getUniqueId()).withDisguise(d));
             refresh(player);
             plugin.messages().send(player, "disguise-on", Messages.value("name", name));
         }, null));
+    }
+
+    /**
+     * The skin the named player uses on this network, so a disguise looks like that player.
+     * The proxy answers first: in proxy mode only the proxy's SkinsRestorer has the skins players
+     * picked (a backend's own API may answer from an empty store). With no proxy answer, this
+     * server's SkinsRestorer, and last the account's Mojang skin.
+     */
+    private CompletableFuture<Optional<Skin>> skinFor(String name) {
+        // Offline-mode UUIDs depend on the exact name case; this server's cache has the real one.
+        OfflinePlayer known = Bukkit.getOfflinePlayerIfCached(name);
+        UUID id = known == null ? null : known.getUniqueId();
+        return plugin.store().requestSkin(name, id, PROXY_SKIN_TIMEOUT).exceptionallyCompose(noProxy -> {
+            if (!plugin.getServer().getPluginManager().isPluginEnabled("SkinsRestorer") || !SkinsRestorerLookup.available()) {
+                return skins.fetch(name);
+            }
+            return CompletableFuture.supplyAsync(() -> {
+                try {
+                    return SkinsRestorerLookup.find(id, name);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("SkinsRestorer lookup for " + name + " failed: " + e);
+                    return Optional.<Skin>empty();
+                }
+            });
+        });
     }
 
     public boolean undisguise(Player player) {

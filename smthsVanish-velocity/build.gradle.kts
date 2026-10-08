@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":smthsVanish-common"))
+    compileOnly("net.skinsrestorer:skinsrestorer-api:15.12.6")
     compileOnly("com.velocitypowered:velocity-api:4.2.0") {
         exclude(group = "com.velocitypowered", module = "velocity-brigadier")
     }

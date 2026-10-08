@@ -18,6 +18,10 @@ dependencies:
       load: BEFORE
       required: false
       join-classpath: true
+    SkinsRestorer:
+      load: BEFORE
+      required: false
+      join-classpath: true
     voicechat:
       load: BEFORE
       required: false
@@ -74,9 +78,6 @@ permissions:
     default: op
   smthsvanish.disguise.name:
     description: /disguise <ad> ile adı kendin seç
-    default: op
-  smthsvanish.disguise.skin:
-    description: /disguise <ad> <skin> ile skini kendin seç
     default: op
   smthsvanish.disguise.others:
     description: Başkasının disguise'ını kaldır

@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":smthsVanish-common"))
+    compileOnly("net.skinsrestorer:skinsrestorer-api:15.12.6")
     compileOnly("io.papermc.paper:paper-api:26.2.build.124-stable")
     compileOnly("com.github.retrooper:packetevents-spigot:2.13.0")
     compileOnly("me.clip:placeholderapi:2.11.6")

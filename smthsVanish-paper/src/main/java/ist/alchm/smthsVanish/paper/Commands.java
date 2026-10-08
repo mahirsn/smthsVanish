@@ -20,7 +20,7 @@ import static io.papermc.paper.command.brigadier.Commands.argument;
 import static io.papermc.paper.command.brigadier.Commands.literal;
 
 /**
- * /vanish [player|list|reload] and /disguise [name] [skin], /undisguise [player]. Every branch
+ * /vanish [player|interact|pickup|list|reload], /disguise [name] and /undisguise [player]. Every branch
  * checks its own permission, so LuckPerms decides each feature on its own.
  */
 @NullMarked
@@ -92,17 +92,12 @@ final class Commands {
                         plugin.messages().send(self, "disguise-name-taken");
                         return 0;
                     }
-                    plugin.disguises().disguise(self, name, name);
+                    plugin.disguises().disguise(self, name);
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(argument("name", StringArgumentType.word())
                         .requires(s -> s.getSender().hasPermission("smthsvanish.disguise.name"))
-                        .executes(ctx -> disguiseAs(ctx, StringArgumentType.getString(ctx, "name"), null))
-                        .then(argument("skin", StringArgumentType.word())
-                                .requires(s -> s.getSender().hasPermission("smthsvanish.disguise.skin"))
-                                .executes(ctx -> disguiseAs(ctx,
-                                        StringArgumentType.getString(ctx, "name"),
-                                        StringArgumentType.getString(ctx, "skin")))))
+                        .executes(ctx -> disguiseAs(ctx, StringArgumentType.getString(ctx, "name"))))
                 .build();
     }
 
@@ -175,7 +170,7 @@ final class Commands {
         return Command.SINGLE_SUCCESS;
     }
 
-    private int disguiseAs(CommandContext<CommandSourceStack> ctx, String name, @Nullable String skin) {
+    private int disguiseAs(CommandContext<CommandSourceStack> ctx, String name) {
         Player self = player(ctx);
         if (self == null || !usable(self)) return 0;
         if (!DisguiseService.isValidName(name)) {
@@ -186,11 +181,7 @@ final class Commands {
             plugin.messages().send(self, "disguise-name-taken");
             return 0;
         }
-        if (skin != null && !DisguiseService.isValidName(skin)) {
-            plugin.messages().send(self, "disguise-invalid-name");
-            return 0;
-        }
-        plugin.disguises().disguise(self, name, skin == null ? name : skin);
+        plugin.disguises().disguise(self, name);
         return Command.SINGLE_SUCCESS;
     }
 

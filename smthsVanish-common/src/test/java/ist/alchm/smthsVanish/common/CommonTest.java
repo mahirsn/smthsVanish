@@ -52,4 +52,10 @@ class CommonTest {
         assertFalse(off.interact() || off.pickup());
         assertFalse(off.withVanish(true, 2).interact());
     }
+
+    @Test
+    void offlineIdMatchesTheServer() {
+        // Same value the test network's Paper gives the offline player "Admin".
+        assertEquals("40c73079-eb42-3445-9f3c-c31a5964a44a", SkinsRestorerLookup.offlineId("Admin").toString());
+    }
 }
